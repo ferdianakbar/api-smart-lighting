@@ -15,6 +15,6 @@ mongo.connect(db.getConnection())
 setupController(server, restify, restifyValidator)
 statusController(server)
 
-server.listen(8000, function(){
+server.listen(80, function(){
     console.log('server running on', server.name, server.url)
 })
