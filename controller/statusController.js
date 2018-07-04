@@ -1,9 +1,12 @@
 helpers = require('../config/helper.js')
 statusModel = require('../models/statusModel.js')
+sleepLog = require('../models/sleepLogModel.js')
+predictModel = require('../models/predictModel.js')
+usermode = require('../models/userModel.js')
 //mqttModel = require('../models/mqttModel.js')
 
 var mqtt = require('mqtt')
-var clmqtt = mqtt.connect('mqtt://18.188.184.186')
+var clmqtt = mqtt.connect('mqtt://test.mosquitto.org')
 
 
 module.exports = function(server) {
@@ -14,18 +17,26 @@ module.exports = function(server) {
     server.post('/api/status', function(req, res, next) {
         status = new statusModel()
         var time = new Date()
-        console.log(time.toUTCString)
+        status.tanggal = time.toLocaleDateString()
         status.status = req.params.status
-        console.log(status.status)
-        status.time = time.toUTCString()
-        console.log(time)
+        status.auto = req.params.auto
+        status.time.push(req.params.startTime)
+
+        if (req.params.endTime != null){
+            status.time.push(req.params.endTime)    
+        }
+
+        console.log(status)
 
         status.save(function (err){
             if (err){
                 helpers.failure(res, next, 'your request is false', 400)
             } else {
-                
-                clmqtt.publish('/status/smart-lamp', req.params.status)
+                clmqtt.publish('/TA-ferdi/status/smart-lamp', req.params.status)
+                if (status.auto == true){
+                    mssg =  status.time[0]+'&'+status.time[1]
+                    clmqtt.publish('/TA-ferdi/status/smart-lamp/alarm', mssg)
+                }
                 helpers.success(res, next, status)
             }
         })
@@ -37,4 +48,64 @@ module.exports = function(server) {
             helpers.success(res, next, status);
         }).findOne().sort({ field: 'asc', _id: -1 }).limit(1);
     }) 
+
+    //get last sleep log by day
+    server.get('/api/sleep-log/:days', function (req, res, next){
+        days = parseInt(req.params.days)
+        console.log(days)
+        sleepLog.find({}, function(err, data){
+            helpers.success(res, next, data);
+        }).sort({ _id: -1 }).limit(days);
+    }) 
+
+    //save sleep log
+    server.post('/api/sleep-log/add', function (req, res, next){
+        sleeplog = new sleepLog()
+        sleeplog.tanggal = req.params.tanggal
+        sleeplog.start = req.params.start
+        sleeplog.end = req.params.end
+        console.log(sleeplog)
+
+        sleeplog.save(function (err){
+            if (err){
+                helpers.failure(res, next, 'cant post data', 400)
+            } else {
+                helpers.success(res, next, sleeplog)
+            }
+        })
+    }) 
+
+    //save predict data
+    server.post('/api/predict/add', function (req, res, next){
+        predict = new predictModel()
+        predict.mseStart = req.params.mseStart
+        predict.mseEnd = req.params.mseEnd
+        predict.startTime = req.params.startTime
+        predict.endTime = req.params.endTime
+        console.log(predict)
+
+        predict.save(function (err){
+            if (err){
+                helpers.failure(res, next, 'cant post data', 400)
+            } else {
+                helpers.success(res, next, predict)
+            }
+        })
+    })
+
+    //get last predict data
+    server.get('/api/predict', function (req, res, next){
+        predictModel.find({}, function(err, status){
+            helpers.success(res, next, status);
+        }).findOne().sort({ field: 'asc', _id: -1 }).limit(1);
+    })
+
+    //get last n predict data 
+    server.get('/api/predict/:days', function (req, res, next){
+        days = parseInt(req.params.days)
+
+        predictModel.find({}, function(err, status){
+            helpers.success(res, next, status);
+        }).sort({ _id: -1 }).limit(days);
+    })
 }

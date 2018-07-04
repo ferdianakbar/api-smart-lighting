@@ -5,8 +5,10 @@ var Schema = mongo.Schema,
 
 var StatusSchema = new Schema({
     id: ObjectId,
+    tanggal: String,
     status: String,
-    time: Date
+    auto: Boolean,
+    time: []
 });
 
 var statusModel = mongo.model('status', StatusSchema);
