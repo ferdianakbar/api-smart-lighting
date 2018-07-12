@@ -78,6 +78,12 @@ module.exports = function(server) {
     //save predict data
     server.post('/api/predict/add', function (req, res, next){
         predict = new predictModel()
+        if (req.params.tanggal == null){
+            var time = new Date()
+            predict.tanggal = time.toLocaleDateString()
+        } else {
+            predict.tanggal = req.params.tanggal
+        }
         predict.mseStart = req.params.mseStart
         predict.mseEnd = req.params.mseEnd
         predict.startTime = req.params.startTime

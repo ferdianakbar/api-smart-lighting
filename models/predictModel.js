@@ -5,9 +5,10 @@ var Schema = mongo.Schema,
 
 var PredictSchema = new Schema({
     id: ObjectId,
+    tanggal: String,
     mseStart: String,
     mseEnd: String,
-    starTime: String,
+    startTime: String,
     endTime: String
 });
 
