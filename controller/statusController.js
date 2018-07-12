@@ -20,10 +20,17 @@ module.exports = function(server) {
         status.tanggal = time.toLocaleDateString()
         status.status = req.params.status
         status.auto = req.params.auto
-        status.time.push(req.params.startTime)
+
+        if (req.params.startTime != null){
+            status.time.push(req.params.startTime)    
+        } else {
+            status.time.push('0')
+        }
 
         if (req.params.endTime != null){
             status.time.push(req.params.endTime)    
+        } else {
+            status.time.push('0')
         }
 
         console.log(status)
@@ -37,7 +44,7 @@ module.exports = function(server) {
                     mssg =  status.time[0]+'&'+status.time[1]
                     clmqtt.publish('/TA-ferdi/status/smart-lamp/alarm', mssg)
                 }
-                helpers.success(res, next, status)
+                helpers.success(res, next, status, 201)
             }
         })
     })
@@ -64,13 +71,13 @@ module.exports = function(server) {
         sleeplog.tanggal = req.params.tanggal
         sleeplog.start = req.params.start
         sleeplog.end = req.params.end
-        console.log(sleeplog)
+        //console.log(sleeplog)
 
         sleeplog.save(function (err){
             if (err){
                 helpers.failure(res, next, 'cant post data', 400)
             } else {
-                helpers.success(res, next, sleeplog)
+                helpers.success(res, next, sleeplog,201)
             }
         })
     }) 
@@ -88,13 +95,13 @@ module.exports = function(server) {
         predict.mseEnd = req.params.mseEnd
         predict.startTime = req.params.startTime
         predict.endTime = req.params.endTime
-        console.log(predict)
+        //console.log(predict)
 
         predict.save(function (err){
             if (err){
                 helpers.failure(res, next, 'cant post data', 400)
             } else {
-                helpers.success(res, next, predict)
+                helpers.success(res, next, predict, 201)
             }
         })
     })
