@@ -52,7 +52,7 @@ module.exports = function(server) {
     //get last status
     server.get('/api/status', function (req, res, next){
         statusModel.find({}, function(err, status){
-            helpers.success(res, next, status);
+            helpers.success(res, next, status, 200);
         }).findOne().sort({ field: 'asc', _id: -1 }).limit(1);
     }) 
 
@@ -61,7 +61,7 @@ module.exports = function(server) {
         days = parseInt(req.params.days)
         console.log(days)
         sleepLog.find({}, function(err, data){
-            helpers.success(res, next, data);
+            helpers.success(res, next, data, 200);
         }).sort({ _id: -1 }).limit(days);
     }) 
 
@@ -109,7 +109,7 @@ module.exports = function(server) {
     //get last predict data
     server.get('/api/predict', function (req, res, next){
         predictModel.find({}, function(err, status){
-            helpers.success(res, next, status);
+            helpers.success(res, next, status, 200);
         }).findOne().sort({ field: 'asc', _id: -1 }).limit(1);
     })
 
@@ -118,7 +118,7 @@ module.exports = function(server) {
         days = parseInt(req.params.days)
 
         predictModel.find({}, function(err, status){
-            helpers.success(res, next, status);
+            helpers.success(res, next, status, 200);
         }).sort({ _id: -1 }).limit(days);
     })
 }
