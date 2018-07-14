@@ -4,6 +4,7 @@ var statusController = require('./controller/statusController.js')
 var restifyValidator = require('restify-validator')
 var mongo = require('mongoose')
 var db = require('./config/dbMongo.js')
+var cors = require('cors')
 
 
 var server = restify.createServer({
@@ -12,7 +13,7 @@ var server = restify.createServer({
 
 
 mongo.connect(db.getConnection())
-setupController(server, restify, restifyValidator)
+setupController(server, restify, restifyValidator, cors)
 statusController(server)
 
 server.listen(80, function(){
