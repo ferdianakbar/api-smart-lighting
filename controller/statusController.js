@@ -18,19 +18,19 @@ module.exports = function(server) {
         status = new statusModel()
         var time = new Date()
         status.tanggal = time.toLocaleDateString()
-        status.status = req.params.status
+        status.status = req.params.status.toLowerCase()
         status.auto = req.params.auto
 
         if (req.params.startTime != null){
             status.time.push(req.params.startTime)    
         } else {
-            status.time.push('0')
+            status.time.push('-1')
         }
 
         if (req.params.endTime != null){
             status.time.push(req.params.endTime)    
         } else {
-            status.time.push('0')
+            status.time.push('-1')
         }
 
         console.log(status)
@@ -42,7 +42,7 @@ module.exports = function(server) {
                 clmqtt.publish('/TA-ferdi/status/smart-lamp', req.params.status)
                 if (status.auto == true){
                     mssg =  status.time[0]+'&'+status.time[1]
-                    clmqtt.publish('/TA-ferdi/status/smart-lamp/alarm', mssg)
+                    clmqtt.publish('/TA-ferdi/status/smart-lamp', mssg)
                 }
                 helpers.success(res, next, status, 201)
             }
