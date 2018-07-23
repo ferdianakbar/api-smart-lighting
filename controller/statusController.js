@@ -10,6 +10,35 @@ var clmqtt = mqtt.connect('mqtt://test.mosquitto.org')
 
 
 module.exports = function(server) {
+
+    // mqtt nya belum bisa
+    clmqtt.on('connect', function (){
+        clmqtt.subscribe('/TA-ferdi/status/smart-lamp/update')
+    })
+    clmqtt.on('message', function(topic, message){
+        console.log(message.toString())
+        status = new statusModel()
+        var time = new Date()
+        var msg = message.toString()
+        if (msg === 'done'){
+            status = time.toLocaleDateString()
+            status.status = 'on'
+            status.auto = false
+            var timer = ['-1', '-1']
+            status.time= timer
+        }else{
+            var time = message.toString().split('&')
+            status = time.toLocaleDateString()
+            status.status = 'off'
+            status.time.push('-1')
+            status.time.push(time[1])
+        }
+        status.save(function (err) {
+            if (err) return handleError(err);
+            // saved!
+        });
+    })
+
     server.get('/', function(req, res, next){
         helpers.success(res, next, 'this server running')
     }) 

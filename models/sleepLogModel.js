@@ -9,7 +9,10 @@ var SleeplogSchema = new Schema({
     start: String,
     end: String
 });
+// asli
+// var sleeplogModel = mongo.model('sleeplogs', SleeplogSchema);
 
-var sleeplogModel = mongo.model('sleeplogs', SleeplogSchema);
+// test 
+var sleeplogModel = mongo.model('sleeplogss', SleeplogSchema);
 
 module.exports = sleeplogModel;
