@@ -78,6 +78,36 @@ module.exports = function(server) {
         })
     })
 
+    server.post('/api/status/pi', function(req, res, next) {
+        status = new statusModel()
+        var time = new Date()
+        status.tanggal = time.toLocaleDateString()
+        status.status = req.params.status.toLowerCase()
+        status.auto = req.params.auto
+
+        if (req.params.startTime != null){
+            status.time.push(req.params.startTime)    
+        } else {
+            status.time.push('-1')
+        }
+
+        if (req.params.endTime != null){
+            status.time.push(req.params.endTime)    
+        } else {
+            status.time.push('-1')
+        }
+
+        console.log(status)
+
+        status.save(function (err){
+            if (err){
+                helpers.failure(res, next, 'your request is false', 400)
+            } else {
+                helpers.success(res, next, status, 201)
+            }
+        })
+    })
+
     //get last status
     server.get('/api/status', function (req, res, next){
         statusModel.find({}, function(err, status){
