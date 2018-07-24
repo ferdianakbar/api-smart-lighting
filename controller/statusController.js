@@ -40,7 +40,7 @@ module.exports = function(server) {
     })
 
     server.get('/', function(req, res, next){
-        helpers.success(res, next, 'this server running')
+        helpers.success(res, next, 'this server running',200)
     }) 
 
     server.post('/api/status', function(req, res, next) {
